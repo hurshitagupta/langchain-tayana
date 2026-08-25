@@ -1,0 +1,10 @@
+{
+  "question": "Use the add tool to add 15 and 27.",
+  "tool": "add",
+  "arguments": {
+    "a": 15,
+    "b": 27
+  },
+  "result": 42
+}
+Final answer: The sum of 15 and 27 is **42**.
