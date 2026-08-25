@@ -1,0 +1,15 @@
+
+Question: What is LangChain?
+Answer: LangChain is an open‑source framework that enables developers to build applications powered by large language models by chaining together prompts, models, and external tools or data sources.
+
+Question: What is LCEL?
+Answer: LCEL is most commonly known as the ticker symbol for Lattice Energy Corp., a company developing advanced energy‑storage technologies, though the abbreviation can refer to other entities depending
+
+Question: What is a Runnable in LangChain?
+Answer: A Runnable in LangChain is a modular, composable abstraction that represents any callable component—such as a prompt, model, chain, or tool—allowing you to chain, parallelize, or transform its inputs and outputs using a unified, functional‑style interface.
+
+Question: What is an output parser?
+Answer: An output parser is a component that interprets and converts a model’s raw generated text into a structured format (e.g., JSON, objects, or specific data types) for downstream use.
+
+Question: What is a retriever?
+Answer: A retriever is a breed of dog originally developed to fetch and bring back game for hunters.
