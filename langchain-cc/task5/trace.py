@@ -8,6 +8,8 @@ from langchain_openrouter import ChatOpenRouter
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
+from common.guards import validate_output, check_token_budget
+
 load_dotenv()
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -16,7 +18,14 @@ model = ChatOpenRouter(
     model="gpt-oss-120b",
     temperature=0,
     api_key=os.environ["OPENROUTER_API_KEY"],
-    base_url="https://openrouter.ai/api/v1"
+    base_url="https://openrouter.ai/api/v1",
+    max_retries=3,
+    timeout=30000
+)
+
+retry_model = model.with_retry(
+    stop_after_attempt=3,
+    wait_exponential_jitter=True
 )
 
 prompt = ChatPromptTemplate.from_messages([
@@ -31,9 +40,11 @@ def run(question: str) -> dict:
     t0 = time.perf_counter()
 
     try:
+        check_token_budget(question)
         prompt_value = prompt.invoke({"question": question})
-        response = model.invoke(prompt_value)
+        response = retry_model.invoke(prompt_value)
         output = parser.invoke(response)
+        output = validate_output(output)
 
         usage = response.usage_metadata or {}
 

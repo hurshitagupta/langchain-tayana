@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Hurshita Gupta\OneDrive\Desktop\langchain-tayana\langchain-cc\common\guards.py", line 13, in check_token_budget
+    raise ValueError(
+ValueError: BUDGET REJECTED: input exceeds 500 tokens.
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Hurshita Gupta\OneDrive\Desktop\langchain-tayana\langchain-cc\common\guards.py", line 22, in validate_output
+    raise ValueError(
+ValueError: Error: invalid model output.
