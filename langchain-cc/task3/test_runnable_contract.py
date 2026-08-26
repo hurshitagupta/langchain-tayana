@@ -1,6 +1,6 @@
 import pytest
 
-from runnable_contract import run_invoke, chain
+from task3.runnable_contract import run_invoke, chain
 
 
 def test_runnable_success():

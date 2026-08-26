@@ -1,6 +1,6 @@
 import pytest
 
-from agent import add
+from task4.agent import add
 
 
 def test_add_success():

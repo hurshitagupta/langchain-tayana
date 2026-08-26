@@ -1,4 +1,4 @@
-from trace import summary
+from task5.trace import summary
 
 
 def test_summary_success():

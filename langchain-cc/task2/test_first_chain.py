@@ -1,5 +1,5 @@
 import pytest
-from first_chain import chain
+from task2.first_chain import chain
 
 
 def test_chain_success():
