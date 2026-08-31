@@ -189,6 +189,89 @@ The reusable guardrails introduced previously remain active and their configurab
 
 The step-limit, token-budget and validation failure paths are recorded through the reusable guardrail evidence script. Timeout and retry use the built-in `ChatOpenRouter` configuration.
 
+---
+
+## Task 4 — Failure Isolation
+
+Task 4 makes retriever failure non-fatal.
+
+The retriever call inside `AnswerService` is wrapped in exception handling. If retrieval succeeds, the returned documents are used normally. If the retriever fails, the failure is isolated instead of crashing the whole request.
+
+On retriever failure:
+
+* `docs` becomes an empty list
+* `sources` becomes `0`
+* the model is still called
+* the request still returns an answer
+* the `degraded` field records the failure type
+
+Example degraded state:
+
+```text
+retriever_unavailable: RuntimeError
+```
+
+### Run
+
+Normal application flow:
+
+```bash
+python -m interface.cli "What is LangChain?"
+```
+
+### Tests
+
+Task 4 contains:
+
+* **Success case** — verifies that a working retriever returns context normally and `degraded` is `None`.
+* **Failure case** — injects a deliberately failing retriever and verifies that the request still returns an answer instead of crashing.
+
+Run:
+
+```bash
+python -m pytest tests/test_task4.py -q 
+```
+
+The failure test prints the returned result so the degraded behaviour can be seen directly in the terminal.
+
+Example:
+
+```text
+{
+  'answer': 'Fallback answer',
+  'sources': 0,
+  'degraded': 'retriever_unavailable: RuntimeError'
+}
+```
+
+A screenshot of the automated test output has also been included as evidence showing that retriever failure was captured correctly while the request still completed successfully.
+
+### Evidence
+
+Task 4 application and automated test evidence is saved in:
+
+`results/task4_output.png`
+
+Guardrail evidence is saved in:
+
+`results/task4_guardrails.txt`
+
+The automated test screenshot additionally shows the degraded failure behaviour being handled correctly.
+
+### Guardrails
+
+The same reusable guardrails remain active in Task 4:
+
+* **Step limit** — limits component/API hops.
+* **Timeout** — configured through the model request timeout.
+* **Retry** — capped through the model retry configuration.
+* **Token budget** — checks the question and retrieved context before the model call.
+* **Validation** — validates model output before returning it.
+* **Secret hygiene** — API keys are loaded only from environment variables and are not hardcoded.
+
+Task 4 additionally introduces **failure isolation**, ensuring a retriever failure does not crash the complete request.
+
+
 
 
 

@@ -13,7 +13,14 @@ class AnswerService:
         steps = StepCounter(max_steps=self.settings.max_steps)
 
         steps.check()
-        docs = self.retriever.search(question, self.settings.top_k)
+
+        try:
+            docs = self.retriever.search(question, self.settings.top_k)
+            degraded = None
+
+        except Exception as exc:
+            docs = []
+            degraded = f"retriever_unavailable: {type(exc).__name__}"
 
         context = "\n".join(doc.page_content for doc in docs)
 
@@ -28,4 +35,5 @@ class AnswerService:
         return {
             "answer": answer,
             "sources": len(docs),
+            "degraded": degraded
         }
