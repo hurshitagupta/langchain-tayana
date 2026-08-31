@@ -1,0 +1,4 @@
+LangChain is a framework for building applications powered by language models.
+Retrievers find relevant documents or pieces of information for a user's query.
+Dependency inversion allows high-level application logic to depend on abstractions instead of concrete implementations.
+LangChain supports components such as models, retrievers, tools, prompts, and chains.

@@ -59,4 +59,67 @@ The final architecture will include the required guardrail implementations and e
 
 ---
 
+## Task 2 — Dependency Inversion
+
+Task 2 extends the architecture by defining protocol interfaces for the three main dependencies:
+
+* `Model`
+* `Retriever`
+* `Store`
+
+Concrete implementations are injected into `AnswerService`, allowing the orchestration layer to depend on abstractions rather than specific implementations.
+
+### Concrete Implementations
+
+* **Model:** `OpenRouterModel` using LangChain `ChatOpenRouter`
+* **Store:** Chroma vector store
+* **Retriever:** LangChain retriever created from Chroma using `as_retriever()`
+* **Embeddings:** Hugging Face `sentence-transformers/all-MiniLM-L6-v2`
+
+Documents from `data/knowledge.txt` are split into chunks, embedded, stored in Chroma, and retrieved as relevant context before the model generates an answer.
+
+### Run
+
+```bash id="9gz8em"
+python -m interface.cli "What is Langchain"
+```
+
+### Tests
+
+Task 2 includes automated tests using injected fake dependencies to verify:
+
+* Successful execution when dependencies behave normally.
+* Failure behaviour when the retriever raises an exception.
+
+Run:
+
+```bash id="4yavsa"
+python -m pytest tests/test_task2.py -q
+```
+
+### Evidence
+
+Application and test output:
+
+`results/task2_output.txt`
+
+Guardrail evidence:
+
+`results/task2_guardrails.txt`
+
+### Guardrails
+
+**Step limit:** A `StepCounter` places a hard limit on component/API hops. A deliberate third step with a limit of two produces `step_limit_reached`.
+
+**Token budget:** The combined question and retrieved context are checked before the model call. Requests exceeding the configured budget are rejected.
+
+**Validation:** Model output is validated before being returned. Empty or non-string output is rejected.
+
+**Timeout:** The real `ChatOpenRouter` model is configured with a built-in request timeout. During testing, very small timeout values prevented normal model completion but did not consistently surface a clean timeout log through the integration, so the production value was restored.
+
+**Retry:** The real `ChatOpenRouter` model uses its built-in capped retry configuration through `max_retries`. Retry behaviour is kept bounded rather than allowing unlimited attempts.
+
+**Secret hygiene:** `OPENROUTER_API_KEY` is read from the environment and is not hardcoded in source code. The `.env` file is excluded from Git.
+
+
 
