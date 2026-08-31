@@ -121,5 +121,74 @@ Guardrail evidence:
 
 **Secret hygiene:** `OPENROUTER_API_KEY` is read from the environment and is not hardcoded in source code. The `.env` file is excluded from Git.
 
+---
+
+## Task 3 — Config Surface
+
+Task 3 moves runtime configuration out of the application code and into environment variables.
+
+A validated `Settings` object is implemented using Pydantic Settings. Components receive the validated settings instead of reading or hardcoding configuration independently.
+
+### Configuration
+
+The following values are loaded from the environment:
+
+* Model name and OpenRouter base URL
+* API key
+* Retrieval `top_k`
+* Timeout and retry limits
+* Step limit and token budget
+* Embedding model
+* Chroma collection name
+* Chunk size and overlap
+* Knowledge file path
+
+Pydantic validation ensures invalid configuration is rejected before the application runs. For example, `TOP_K=0` is rejected because `top_k` must be between 1 and 20.
+
+The `.env` file is excluded from Git and secrets are accessed only through the validated settings object.
+
+### Run
+
+```bash
+python -m interface.cli "What is Langchain?"
+```
+
+### Tests
+
+Task 3 includes:
+
+* **Success case** — verifies that valid environment configuration is loaded correctly.
+* **Failure case** — verifies that invalid configuration is rejected with a Pydantic `ValidationError`.
+
+Run:
+
+```bash
+python -m pytest tests/test_task3.py -q
+```
+
+### Evidence
+
+Application and automated test output is saved in:
+
+`results/task3_output.txt`
+
+Guardrail evidence is saved in:
+
+`results/task3_guardrails.txt`
+
+### Guardrails
+
+The reusable guardrails introduced previously remain active and their configurable values are now supplied through the validated settings surface.
+
+* **Step limit** — `MAX_STEPS` controls the maximum allowed component/API hops.
+* **Timeout** — `TIMEOUT_MS` configures the model request timeout.
+* **Retry** — `MAX_RETRIES` provides a capped retry count for the model request.
+* **Token budget** — `MAX_TOKENS` limits the question and retrieved context before the model call.
+* **Validation** — model output is validated before it is returned.
+* **Secret hygiene** — the OpenRouter API key is loaded from the environment and is never hardcoded in source code.
+
+The step-limit, token-budget and validation failure paths are recorded through the reusable guardrail evidence script. Timeout and retry use the built-in `ChatOpenRouter` configuration.
+
+
 
 

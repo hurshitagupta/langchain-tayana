@@ -1,0 +1,8 @@
+*****STEP LIMIT TEST******
+Step1
+Step2
+Step Limit reached: 2
+*****TOKEN BUDGET LIMIT********
+Token Budget Exceeded: 4001 > 100
+******VALIDATE MODEL OUTPUT*******
+model_output_invalid: empty response

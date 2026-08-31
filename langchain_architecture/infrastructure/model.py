@@ -1,19 +1,17 @@
 import os
 from langchain_openrouter import ChatOpenRouter
-from dotenv import load_dotenv
-
-load_dotenv()
+from config import Settings
 
 class OpenRouterModel:
-    def __init__(self):
+    def __init__(self, settings:Settings):
         self.llm = ChatOpenRouter(
-            model="openai/gpt-oss-120b",
-            api_key=os.environ["OPENROUTER_API_KEY"],
-            base_url="https://openrouter.ai/api/v1",
+            model=settings.model_name,
+            api_key=settings.openrouter_api_key,
+            base_url=settings.base_url,
             # timeout=100, # this is for checking purpose
-            timeout=30_000, #30sec
+            timeout=settings.timeout_ms, 
             # max_retries=0 #this is for checking purpose
-            max_retries=2
+            max_retries=settings.max_retries
         )
 
     def generate(self, ques:str, context:str) -> str:

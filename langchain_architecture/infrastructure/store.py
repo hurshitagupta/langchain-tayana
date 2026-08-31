@@ -1,14 +1,15 @@
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
+from config import Settings
 
 class ChromaStore:
-    def __init__(self):
+    def __init__(self, settings:Settings):
         self.embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
+            model_name=settings.embedding_model
         )
 
         self.vector_store = Chroma(
-            collection_name="architecture_docs",
+            collection_name=settings.collection_name,
             embedding_function=self.embeddings
         )
 
