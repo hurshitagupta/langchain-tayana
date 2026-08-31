@@ -271,6 +271,68 @@ The same reusable guardrails remain active in Task 4:
 
 Task 4 additionally introduces **failure isolation**, ensuring a retriever failure does not crash the complete request.
 
+---
+
+## Task 5 — Architecture Proof
+
+Task 5 proves that the application architecture is not tied to its real infrastructure dependencies.
+
+The real dependencies were replaced with fake implementations:
+
+* `OpenRouterModel` → `FakeModel`
+* `ChromaRetriever` → `FakeRetriever`
+* `ChromaStore` → `FakeStore`
+* validated settings → `FakeSettings`
+
+The same `AnswerService` was used without modification.
+
+This demonstrates that the orchestration layer depends on contracts and expected behaviour rather than specific infrastructure implementations.
+
+### Tests
+
+The automated architecture proof contains:
+
+* **Success case** — all dependencies are replaced with fakes and `AnswerService` still successfully returns an answer.
+* **Failure case** — a fake model deliberately returns invalid output, which is rejected by the existing validation guardrail.
+
+Run:
+
+```bash id="72o32d"
+python -m pytest tests/test_task5.py -q -s
+```
+
+The successful architecture proof produces output similar to:
+
+```text id="03ocqy"
+{'answer': 'Fake model answer', 'sources': 1, 'degraded': None}
+```
+
+The failure case confirms that invalid fake model output is caught instead of being returned to the caller.
+
+### Evidence
+
+Automated test output:
+
+`results/task5_output.txt`
+
+Guardrail evidence:
+
+`results/task5_guardrails.txt`
+
+### Guardrails
+
+The reusable guardrails remain active when dependencies are replaced:
+
+* **Step limit** — caps component/API hops.
+* **Timeout** — configured through the model request timeout.
+* **Retry** — capped through model retry configuration.
+* **Token budget** — prevents oversized input from reaching the model.
+* **Validation** — prevents invalid model output from reaching the caller.
+* **Secret hygiene** — secrets remain environment-based and are never hardcoded.
+
+The failure test also demonstrates that the validation guardrail continues to work even when the real model is replaced with a fake.
+
+
 
 
 

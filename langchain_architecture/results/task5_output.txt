@@ -1,0 +1,4 @@
+{'answer': 'Fake model answer', 'sources': 1, 'degraded': None}
+.Failure correctly caught: model_output_invalid: empty response
+.
+2 passed in 0.48s
